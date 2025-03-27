@@ -213,7 +213,11 @@ fn make_zlib(compiler: &cc::Tool, src_dir: &path::Path, out_dir: &path::Path) {
     // lock README such that if two crates are trying to compile
     // this at the same time (eg libbpf-rs libbpf-cargo)
     // they wont trample each other
-    let file = std::fs::File::open(src_dir.join("README")).unwrap();
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .read(true)
+        .open(src_dir.join("README"))
+        .unwrap();
     let _lock = fcntl::Flock::lock(file, fcntl::FlockArg::LockExclusive).unwrap();
 
     let status = process::Command::new("./configure")
@@ -254,7 +258,11 @@ fn make_elfutils(compiler: &cc::Tool, src_dir: &path::Path, out_dir: &path::Path
     // lock README such that if two crates are trying to compile
     // this at the same time (eg libbpf-rs libbpf-cargo)
     // they wont trample each other
-    let file = std::fs::File::open(src_dir.join("elfutils/README")).unwrap();
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .read(true)
+        .open(src_dir.join("elfutils/README"))
+        .unwrap();
     let _lock = fcntl::Flock::lock(file, fcntl::FlockArg::LockExclusive).unwrap();
 
     let flags = compiler
